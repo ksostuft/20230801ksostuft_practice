@@ -87,27 +87,33 @@ public class CRUD {
             Scanner scanner = new Scanner(System.in);
             System.out.print("메뉴 이름을 입력하세요: ");
             String menuName = scanner.nextLine();
-            System.out.println();
             System.out.print("메뉴 가격을 입력하세요: ");
             int menuPrice = 0;
             try {
                 menuPrice = Integer.parseInt(scanner.nextLine());
             } catch (NumberFormatException e) {
-                e.printStackTrace();
+                System.out.println("잘못된 입력입니다.");
+                close(pstmt);
+                close(con);
+                return;
             }
-            System.out.println();
             System.out.print("카테고리 코드를 입력하세요: ");
             int cateCode = 0;
             try {
                 cateCode = Integer.parseInt(scanner.nextLine());
             } catch (NumberFormatException e) {
-                e.printStackTrace();
+                System.out.println("잘못된 입력입니다.");
+                close(pstmt);
+                close(con);
+                return;
             }
-            System.out.println();
+            if(cateCode <1 || cateCode > 5) {
+                System.out.println("잘못된 입력입니다.");
+                close(pstmt);
+                close(con);
+                return;
+            }
             System.out.print("주문가능 여부 입력하세요: ");
-            /*String orderStatus = scanner.nextLine();
-            System.out.println();*/
-
             String orderStatus = "";
             while(true) {
                 System.out.printf("주문 상태 여부를 선택해주세요 (Y|N): ");
@@ -117,6 +123,12 @@ public class CRUD {
                     return;
                 }
                 break;
+            }
+            System.out.print("잘못 입력한 값이 있을 경우 Y를 입력하세요: ");
+            String checkWrong = scanner.nextLine().toUpperCase();
+            if(checkWrong.equals("Y")) {
+                System.out.println("메뉴로 돌아갑니다.");
+                return;
             }
 
 
@@ -150,15 +162,35 @@ public class CRUD {
             String query = prop.getProperty("updateMenu");
             pstmt = con.prepareStatement(query);
             Scanner scanner = new Scanner(System.in);
-            System.out.printf("갱신하고 싶은 행의 번호를 입력하세요: ");
-            int updateNum = Integer.parseInt(scanner.nextLine());
-            System.out.println();
-            System.out.printf("바꿀 메뉴 이름을 입력하세요.");
+            int updateNum = 0;
+            try {
+                System.out.printf("갱신하고 싶은 행의 번호를 입력하세요: ");
+                updateNum = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("잘못된 입력입니다.");
+                close(pstmt);
+                close(con);
+                return;
+            }
+            System.out.printf("바꿀 메뉴의 이름을 입력하세요: ");
             String changeMenuName = scanner.nextLine();
-            System.out.println();
-            System.out.printf("바꿀 메뉴 가격을 입력하세요.");
-            int changePrice = Integer.parseInt(scanner.nextLine());
-            System.out.println();
+            int changePrice = 0;
+            try {
+                System.out.printf("바꿀 메뉴 가격을 입력하세요: ");
+                changePrice = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("잘못된 입력입니다.");
+                close(pstmt);
+                close(con);
+                return;
+            }
+            System.out.print("잘못 입력한 값이 있을 경우 Y를 입력하세요: ");
+            String checkWrong = scanner.nextLine().toUpperCase();
+            if(checkWrong.equals("Y")) {
+                System.out.println("메뉴로 돌아갑니다.");
+                return;
+            }
+
             MenuDTO dto = new MenuDTO();
             dto.setMenuCode(updateNum);
             dto.setMenuName(changeMenuName);
@@ -190,16 +222,22 @@ public class CRUD {
             prop.loadFromXML(new FileInputStream("src/main/java/com/ksostuft/mapper/menu-query.xml"));
             String query = prop.getProperty("deleteMenu");
             pstmt = con.prepareStatement(query);
-            System.out.print("제거하고 싶은 행의 번호를 입력하세요: ");
             Scanner scanner = new Scanner(System.in);
-            int deleteCode = Integer.parseInt(scanner.nextLine());
+            int deleteCode = 0;
+            try {
+                System.out.print("제거하고 싶은 행의 번호를 입력하세요: ");
+                deleteCode = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("잘못된 입력입니다.");
+                close(pstmt);
+                close(con);
+                return;
+            }
             MenuDTO dto = new MenuDTO();
             dto.setMenuCode(deleteCode);
             pstmt.setInt(1, dto.getMenuCode());
             result = pstmt.executeUpdate();
-            System.out.println();
             System.out.println(result + "개의 행을 제거했습니다.");
-            System.out.println();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (SQLException e) {
